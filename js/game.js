@@ -3,7 +3,10 @@ var Game = {
     ctx: undefined,
     fps: 60,
     playerIniHealth: 550,
-    enemyIniHealth: 440,
+    enemyIniHealth: 200,
+    stopDie: true,
+    startBattle: false,
+    framesCounter: 0,
     keys: {
         TOP_KEY: 38,
         DOWN_KEY: 40,
@@ -25,17 +28,25 @@ var Game = {
         this.interval = setInterval(function() {
             this.clear();
             this.framesCounter++;
-            this.framesCounter > 1500 ? this.stop() : null
+            if ((!this.startBattle)) {
+                this.gameboard.draw()
+                this.player.drawInMap()
+                this.enemyFound()
+            } else {
+                if (this.startBattle) { framesCounter = 0 }
+                this.battleSequence()
+            }
 
-            this.battleSequence()
         }.bind(this), 1000 / this.fps)
     },
     // Reset all game elements to start a new state
     reset: function() {
+        this.gameboard = new GameBoard(this)
         this.background = new Background(this)
-        this.player = new Player(this, this.w * 0.10, this.h * 0.59, 120, 100, this.playerIniHealth, 110)
-        this.enemy = new Enemy(this, this.w * 1.65, this.h * 0.61, 120, 100, this.enemyIniHealth, 50)
-        this.framesCounter = 0
+        this.images = Images
+        this.images.loadImages()
+        this.player = new Player(this, 100, 400, this.playerIniHealth, 110)
+        this.enemy = new Enemy(this, 1740, 425, this.enemyIniHealth, 50)
     },
     // Clear screen each interval (60fps) to add movement to the canvas
     clear: function() {
@@ -44,30 +55,28 @@ var Game = {
 
     // Function called on each interval to update the score
     drawScore: function() {
-        this.player.update(this.ctx, this.player.health, this.playerIniHealth, this.w / 2 - this.playerIniHealth - 35, this.player.strength, this.w / 2 - this.playerIniHealth - 20)
-        this.enemy.update(this.ctx, this.enemy.health, this.enemyIniHealth, this.w / 2 + 5, this.enemy.strength, (this.w / 2) + 20)
+        this.player.update(this.ctx, this.player, this.playerIniHealth, this.w / 2 - this.playerIniHealth - 35, this.w / 2 - this.playerIniHealth - 20)
+        this.enemy.update(this.ctx, this.enemy, this.enemyIniHealth, this.w / 2 + 5, (this.w / 2) + 20)
     },
 
-    sequence: function(begin, end, actionPlayer, actionEnemy, width, height, animationPlayer, animationEnemy) {
-        if ((this.framesCounter > begin) && (this.framesCounter <= end)) {
-            this.player.draw('SilverKnight', actionPlayer, width, height, animationPlayer)
-            this.enemy.draw('Orc1', actionEnemy, 389, 394, 6)
-            if (this.framesCounter <= 300) {
+    sequence: function(begin, end, actionPlayer, actionEnemy, width, height, animationPlayer) {
+        this.fC = this.framesCounter
+        if ((this.fC > begin) && (this.fC <= end)) {
+            this.player.draw('silverKnight', actionPlayer, width, height, animationPlayer)
+            this.enemy.draw('orc1', actionEnemy, 389, 394, 6)
+            if (this.fC <= 300) {
                 this.background.move()
-                this.enemy.move(5.5)
+                this.enemy.move(3.5)
             }
-            if (this.framesCounter > 400) {
-                if ((this.framesCounter !== 1) && (this.framesCounter === end - 1) && (Math.trunc(end / 100) % 2)) {
+            if (this.fC > 400) {
+                if ((this.fC !== 1) && (this.fC === end - 1) && (Math.trunc(end / 100) % 2)) {
                     this.enemy.receiveDamage(this.player.attack())
                 }
-                if ((this.framesCounter === end - 1) && !(Math.trunc(end / 100) % 2)) {
+                if ((this.fC === end - 1) && !(Math.trunc(end / 100) % 2)) {
                     this.player.receiveDamage(this.enemy.attack())
                 }
             }
-
-            if ((this.framesCounter > 300) && (this.framesCounter <= 400)) {
-                this.player.move(-3.5)
-            }
+            if ((this.fC > 300) && (this.fC <= 400)) { this.player.move(-3.5) }
         }
     },
 
@@ -90,9 +99,26 @@ var Game = {
             this.sequence(1500, 1600, 'Summon', 'Attack', 417, 479, 8)
         }
         this.drawScore()
-        if (!(this.player.health > 0) || !(this.enemy.health > 0)) {
-            this.sequence(400, this.framesCounter, 'Idle', 'Die', 319, 385, 10)
+        if ((!(this.player.health > 0) || !(this.enemy.health > 0)) && this.stopDie) {
+            this.sequence(400, 1600, 'Idle', 'Die', 319, 385, 10)
+            this.startBattle = false
+            this.framesCounter = 0
+            this.enemy.health = 200
+            this.player.x = 100
+            this.enemy.y = 400
+            this.enemy.x = 1740
+            this.player.y = 400
         }
+    },
+    enemyFound: function() {
+        this.enemy.enemiesArrayPositions.map((eachEnemy, idx) => {
+            if ((eachEnemy[0] === Math.trunc(this.player.mapX / 60)) &&
+                eachEnemy[1] === Math.trunc(this.player.mapY / 60)) {
+                this.startBattle = true
+                this.framesCounter = 0
+                this.enemy.enemiesArrayPositions.splice(idx, 1)
+            }
+        })
     },
     // Function called in case game is over
     stop: function() {
