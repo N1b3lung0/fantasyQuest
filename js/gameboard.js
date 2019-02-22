@@ -23,6 +23,6 @@ function GameBoard(game) {
 
 GameBoard.prototype.draw = function() {
     this.img = new Image()
-    this.img.src = 'img/GameBoard/dungeon_lvl1.png'
+    this.img.src = 'img/GameBoard/lvl2.png'
     this.game.ctx.drawImage(this.img, 0, 0, window.innerWidth, window.innerHeight)
 }
