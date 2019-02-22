@@ -1,7 +1,17 @@
+var parent, canvas, body, endLevel
+
+
+
 window.onload = function() {
-    var parent = document.getElementById('game-board')
-    var canvas = document.createElement('canvas')
+    parent = document.getElementById('game-board')
+    canvas = document.createElement('canvas')
+    body = document.getElementsByTagName("body")[0]
     canvas.setAttribute('id', 'canvas')
-    parent.appendChild(canvas)
-    Game.init('canvas')
+    body.appendChild(canvas)
+    endLevel = document.getElementById('game-end-level')
+    endLevel.style.display = 'none'
+    document.getElementById("start-button").onclick = function() {
+        parent.style.display = 'none'
+        Game.init('canvas')
+    }
 }

@@ -56,23 +56,13 @@ Player.prototype.setListeners = function() {
         this.newX = Math.trunc(this.mapX / 60)
         this.newPosition
         if (event.keyCode === this.game.keys.TOP_KEY &&
-            this.game.gameboard.matrix[this.newY - 1][this.newX] === 0) {
-            this.mapY -= 60
-                //this.newPosition = [this.mapX, this.mapY]
-                // console.log(this.newPosition)
-        } else
+            this.game.gameboard.matrix[this.newY - 1][this.newX] === 0) { this.mapY -= 60 } else
         if (event.keyCode === this.game.keys.DOWN_KEY &&
-            this.game.gameboard.matrix[this.newY + 1][this.newX] === 0) {
-            this.mapY += 60
-        } else
+            this.game.gameboard.matrix[this.newY + 1][this.newX] === 0) { this.mapY += 60 } else
         if (event.keyCode === this.game.keys.LEFT_KEY &&
-            this.game.gameboard.matrix[this.newY][this.newX - 1] === 0) {
-            this.mapX -= 60
-        } else
+            this.game.gameboard.matrix[this.newY][this.newX - 1] === 0) { this.mapX -= 60 } else
         if (event.keyCode === this.game.keys.RIGHT_KEY &&
-            this.game.gameboard.matrix[this.newY][this.newX + 1] === 0) {
-            this.mapX += 60
-        }
+            this.game.gameboard.matrix[this.newY][this.newX + 1] === 0) { this.mapX += 60 }
     }.bind(this)
 }
 
@@ -81,7 +71,6 @@ Player.prototype.drawInMap = function() {
         this.img.frameIndex += 1
         if (this.img.frameIndex > 9) this.img.frameIndex = 0
     }
-    // console.log([this.mapX, this.mapY])
     this.game.ctx.drawImage(Images['silverKnightWalk'][this.img.frameIndex], this.mapX + 5, this.mapY - 5, 50, 50)
 }
 

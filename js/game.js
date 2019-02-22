@@ -32,11 +32,11 @@ var Game = {
                 this.gameboard.draw()
                 this.player.drawInMap()
                 this.enemyFound()
+                this.endLevel()
             } else {
                 if (this.startBattle) { framesCounter = 0 }
                 this.battleSequence()
             }
-
         }.bind(this), 1000 / this.fps)
     },
     // Reset all game elements to start a new state
@@ -120,6 +120,14 @@ var Game = {
             }
         })
     },
+    endLevel: function() {
+        if ((Math.trunc(this.player.mapX / 60) - 1 === 20) && (Math.trunc(this.player.mapY / 60) === 0)) {
+            console.log('has llegado a la meta')
+            this.stop()
+            this.clear()
+            parent.style.display = 'block'
+        }
+    },
     // Function called in case game is over
     stop: function() {
         clearInterval(this.interval)
@@ -127,5 +135,13 @@ var Game = {
     // Game Over
     gameOver: function() {
         this.stop()
+        parent = document.getElementById('game-board')
+        var body = document.getElementsByTagName("body")[0]
+        canvas.setAttribute('id', 'canvas')
+        body.appendChild(canvas)
+        document.getElementById("start-button").onclick = function() {
+            parent.style.display = 'none'
+            Game.init('canvas')
+        }
     }
 }
