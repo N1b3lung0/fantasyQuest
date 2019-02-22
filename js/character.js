@@ -20,7 +20,6 @@ Character.prototype.draw = function(name, action, width, height, animation) {
         this.img.frameIndex += 1
         if (this.img.frameIndex > animation) this.img.frameIndex = 0
     }
-    console.log(this.x + ' : ' + this.y)
     this.game.ctx.drawImage(Images[`${name}${action}`][this.img.frameIndex], this.x, this.y, width / 2, height / 2)
 }
 

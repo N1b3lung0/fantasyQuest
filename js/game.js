@@ -31,6 +31,8 @@ var Game = {
             if ((!this.startBattle)) {
                 this.gameboard.draw()
                 this.player.drawInMap()
+                this.item.drawRoom1(this.player.mapX / 60, this.player.mapY / 60)
+                this.itemFoundRoom1()
                 this.enemyFound()
                 this.endLevel()
             } else {
@@ -45,8 +47,9 @@ var Game = {
         this.background = new Background(this)
         this.images = Images
         this.images.loadImages()
-        this.player = new Player(this, 100, 400, this.playerIniHealth, 110)
-        this.enemy = new Enemy(this, 1740, 425, this.enemyIniHealth, 50)
+        this.player = new Player(this, 100, 500, this.playerIniHealth, 110)
+        this.enemy = new Enemy(this, 1740, 525, this.enemyIniHealth, 200)
+        this.item = new Item(this)
     },
     // Clear screen each interval (60fps) to add movement to the canvas
     clear: function() {
@@ -99,15 +102,17 @@ var Game = {
             this.sequence(1500, 1600, 'Summon', 'Attack', 417, 479, 8)
         }
         this.drawScore()
-        if ((!(this.player.health > 0) || !(this.enemy.health > 0)) && this.stopDie) {
-            this.sequence(400, 1600, 'Idle', 'Die', 319, 385, 10)
-            this.startBattle = false
-            this.framesCounter = 0
-            this.enemy.health = 200
-            this.player.x = 100
-            this.enemy.y = 400
-            this.enemy.x = 1740
-            this.player.y = 400
+        if ((!(this.player.health > 0) || !(this.enemy.health > 0))) {
+            if (this.player.health <= 0) { this.gameOver() } else {
+                this.sequence(400, 1600, 'Idle', 'Die', 319, 385, 10)
+                this.startBattle = false
+                this.framesCounter = 0
+                this.enemy.health = 200
+                this.player.x = 100
+                this.enemy.y = 525
+                this.enemy.x = 1740
+                this.player.y = 500
+            }
         }
     },
     enemyFound: function() {
@@ -120,12 +125,19 @@ var Game = {
             }
         })
     },
+    itemFoundRoom1: function() {
+        this.item.itemsRoom1.map((eachItem, idx) => {
+            if ((eachItem[0] === Math.trunc(this.player.mapX / 60)) &&
+                eachItem[1] === Math.trunc(this.player.mapY / 60)) {
+                this.item.itemsRoom1.splice(idx, 1)
+            }
+        })
+    },
     endLevel: function() {
         if ((Math.trunc(this.player.mapX / 60) - 1 === 20) && (Math.trunc(this.player.mapY / 60) === 0)) {
-            console.log('has llegado a la meta')
             this.stop()
             this.clear()
-            parent.style.display = 'block'
+            endLevel.style.display = 'block'
         }
     },
     // Function called in case game is over
@@ -135,13 +147,10 @@ var Game = {
     // Game Over
     gameOver: function() {
         this.stop()
-        parent = document.getElementById('game-board')
-        var body = document.getElementsByTagName("body")[0]
-        canvas.setAttribute('id', 'canvas')
-        body.appendChild(canvas)
-        document.getElementById("start-button").onclick = function() {
-            parent.style.display = 'none'
-            Game.init('canvas')
-        }
+        this.clear()
+        this.startBattle = false
+        parent.style.display = 'block'
+        game.style.display = 'none'
+        gameOver.style.display = 'block'
     }
 }

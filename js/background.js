@@ -12,8 +12,8 @@ Background.prototype.randomNumber = function(min, max) {
 }
 
 Background.prototype.randomBackground = function() {
-    this.allBackgrounds = ['img/bg.png', 'img/bg2.png', 'img/bg.jpg', 'img/bg2.jpg', 'img/bg3.jpg', 'img/bg4.jpg']
-    this.img.src = this.allBackgrounds[this.randomNumber(0, 5)]
+    this.allBackgrounds = ['img/Background/bg.png', 'img/Background/bg2.jpg', 'img/Background/bg3.jpg', 'img/Background/bg4.jpg']
+    this.img.src = this.allBackgrounds[this.randomNumber(0, 3)]
 }
 
 Background.prototype.draw = function() {
